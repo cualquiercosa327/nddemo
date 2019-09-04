@@ -1,25 +1,37 @@
+#include "DUMacro.hpp"
 
-// equivelant: OK
-// exact: NO
-int mAlloc(int size)
+void *mAlloc(u32 size)
 {
-    OSThread * currThread;
-    OSPriority threadPrior;
-    void * heapPtr;
+	OSThread *thread;
+	OSPriority priority;
+	void *ptr;
 
-    currThread = (OSThread *)OSGetCurrentThread();
-    threadPrior = OSGetThreadPriority(currThread);
+	thread   = OSGetCurrentThread();
+	priority = OSGetThreadPriority(thread);
 
-    OSSetThreadPriority(currThread, 15);
+	OSSetThreadPriority(thread, 15);
+	ptr = OSAllocFromHeap(0, size);
 
-    heapPtr = (void *)OSAllocFromHeap(NULL, size);
+	if (ptr == NULL)
+	{
+		OSReport("Heap free %d blocksize %d\n", OSCheckHeap(0), size);
+		OSPanic("DUMacro.cpp", 45, "No memory\n");
+	}
 
-    if (heapPtr == NULL)
-    {
-        long heapSanity = OSCheckHeap(NULL);
-        OSReport("Heap free %d blocksize %d\n", heapSanity, size);
-        OSPanic("DUMacro.cpp", 45, "No memory\n");
-    }
-    OSSetThreadPriority(currThread, threadPrior);
-    return (int)heapPtr;
+	OSSetThreadPriority(thread, priority);
+
+	return ptr;
+}
+
+void mFree(void *ptr)
+{
+	OSThread *thread;
+	OSPriority priority;
+
+	thread   = OSGetCurrentThread();
+	priority = OSGetThreadPriority(thread);
+
+	OSSetThreadPriority(thread, 15);
+	OSFreeToHeap(0, ptr);
+	OSSetThreadPriority(thread, priority);
 }
