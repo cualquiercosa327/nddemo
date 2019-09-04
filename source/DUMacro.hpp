@@ -1,3 +1,6 @@
+#ifndef INCLUDE_DUMACRO_HPP
+#define INCLUDE_DUMACRO_HPP
+
 #include <dolphin.h>
 
 #define ALIGN(size, alignment) \
@@ -5,3 +8,5 @@
 
 void *mAlloc(u32 size);
 void mFree(void *ptr);
+
+#endif

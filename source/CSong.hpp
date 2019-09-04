@@ -1,3 +1,6 @@
+#ifndef INCLUDE_CSONG_HPP
+#define INCLUDE_CSONG_HPP
+
 #include <dolphin.h>
 #include <dolphin/musyx.h>
 
