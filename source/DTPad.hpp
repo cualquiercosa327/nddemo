@@ -1,5 +1,3 @@
-
-
 #ifndef INCLUDE_DTPAD_HPP
 #define INCLUDE_DTPAD_HPP
 
@@ -9,9 +7,10 @@ class DTPad
 {
     public:
 
-    int mUnk00;
-    int mUnk04;
-    PADStatus mStatus;
+    int mMask;
+    int mUnused;
+    PADStatus mPreviousStatus[PAD_MAX_CONTROLLERS];
+    PADStatus mCurrentStatus[PAD_MAX_CONTROLLERS];
     
     DTPad();
     ~DTPad();
