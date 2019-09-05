@@ -9,16 +9,16 @@ CSong::CSong()
 }
 
 void CSong::DelayDeleteBuffer()
-{	
+{
 	if (mDelayMode == 3 && mBuffer)
 	{
 		if (sndSeqGetValid(mSongId))
 			mDelayMode = 3;
 		else
 		{
-			mFree(mBuffer);
+			delete mBuffer;
 			mDelayMode = 0;
-			mBuffer	= 0;
+			mBuffer	   = NULL;
 		}
 	}
 }
@@ -31,9 +31,9 @@ void CSong::DeleteBuffer()
 			mDelayMode = 3;
 		else
 		{
-			mFree(mBuffer);
+			delete mBuffer;
 			mDelayMode = 0;
-			mBuffer	= 0;
+			mBuffer	   = NULL;
 		}
 	}
 }
@@ -65,8 +65,8 @@ bool CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
 {
 	DVDFileInfo fileInfo;
 	u32 length;
-		
-	if (mBuffer != NULL) 
+	
+	if (mBuffer) 
 		return true;
 
 	if (!DVDOpen(fileName, &fileInfo))
@@ -76,7 +76,7 @@ bool CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
 	}
 
 	length  = ALIGN(fileInfo.length, 0x20);
-	mBuffer = mAlloc(length);
+	mBuffer = new char[length];
 
 	if (mBuffer == NULL)
 	{
@@ -88,7 +88,7 @@ bool CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
 	{
 		OSReport("ERROR: Read data failed '%s'\n", fileName);
 
-		mFree(mBuffer);
+		delete mBuffer;
 		mBuffer = NULL;
 
 		return false;

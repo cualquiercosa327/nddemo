@@ -40,7 +40,10 @@ C_SRCS =
 
 CXX_SRCS = \
 	main.cpp \
-	DTPad.cpp
+	DTPad.cpp \
+	CSong.cpp \
+	DUMacro.cpp \
+	DUDvd.cpp
 
 ################################################################################
 #

@@ -11,7 +11,7 @@ class CSong
 private:
 	int mSongId;
 	int mSeqId;
-	void *mBuffer;
+	char *mBuffer;
 	int mDelayMode;
 
 public:
@@ -22,3 +22,5 @@ public:
 	bool PlaySong(SND_GROUPID sgId);
 	bool ReadBuffer(SND_SEQID seqId, char *fileName);
 };
+
+#endif

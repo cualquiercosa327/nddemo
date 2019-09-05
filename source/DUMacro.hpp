@@ -9,4 +9,19 @@
 void *mAlloc(u32 size);
 void mFree(void *ptr);
 
+inline void operator delete(void *block)
+{
+	mFree(block);
+}
+
+inline void *operator new(u32 size)
+{
+	return mAlloc(size);
+}
+
+inline void *operator new[](u32 size)
+{
+	return mAlloc(size);
+}
+
 #endif
