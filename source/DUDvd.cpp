@@ -59,17 +59,17 @@ void DUDvd::InitDVD()
 }
 
 bool DUDvd::Open(char *fileName, enumDU_DVD_OPEN_MODE mode)
-{    
-    if (mFileInfo)
+{	
+	if (mFileInfo)
 	{
-        DVDClose(mFileInfo);
+		DVDClose(mFileInfo);
 		
-        if (mFileInfo)
+		if (mFileInfo)
 		{
-            delete mFileInfo;
-            mFileInfo = NULL;
-        }
-    }
+			delete mFileInfo;
+			mFileInfo = NULL;
+		}
+	}
 	
 	if (mBuffer)
 	{
@@ -77,15 +77,15 @@ bool DUDvd::Open(char *fileName, enumDU_DVD_OPEN_MODE mode)
 		mBuffer = NULL;
 	}
 	
-    mLength        = 0;
-    mAlignedLength = 0;
-    mOffset        = 0;
-    mMode          = MODE_0;
+	mLength        = 0;
+	mAlignedLength = 0;
+	mOffset        = 0;
+	mMode          = MODE_0;
 	
-    mMode     = mode;
-    mFileInfo = new DVDFileInfo;
+	mMode     = mode;
+	mFileInfo = new DVDFileInfo;
 		
-    if (DVDOpen(fileName, mFileInfo) == 1)
+	if (DVDOpen(fileName, mFileInfo) == 1)
 	{
 		mLength = mFileInfo->length;
 	
@@ -102,36 +102,36 @@ bool DUDvd::Open(char *fileName, enumDU_DVD_OPEN_MODE mode)
 		}
 		
 		return true;
-    }
+	}
 
-    if (mFileInfo)
+	if (mFileInfo)
 	{
-        delete mFileInfo;
-        mFileInfo = NULL;
-    }
+		delete mFileInfo;
+		mFileInfo = NULL;
+	}
 	
-    OSReport("DVD Open False\n");
+	OSReport("DVD Open False\n");
 	
-    return false;
+	return false;
 }
 
 void DUDvd::Read(void *out, u32 len, int off)
 {
 	int priority;
-    
-    if (mMode == MODE_2 || mMode == MODE_3)
-        memcpy(out, mBuffer + mOffset + off, len);
-    else
-	{
-        priority = DVDRead(mFileInfo, out, len, mOffset + off);
-		
-        if (priority != len)
-		{
-            OSReport("Error DUDvd::Read>len=%d,off=%d,ret=%d\n", len, off, priority);
-            OSReport("Error DUDvd::Read>fptr=%d\n", mOffset);
-        }
-    }
 	
-    if (mMode == MODE_0 || mMode == MODE_2)
-        mOffset += off + len;
+	if (mMode == MODE_2 || mMode == MODE_3)
+		memcpy(out, mBuffer + mOffset + off, len);
+	else
+	{
+		priority = DVDRead(mFileInfo, out, len, mOffset + off);
+		
+		if (priority != len)
+		{
+			OSReport("Error DUDvd::Read>len=%d,off=%d,ret=%d\n", len, off, priority);
+			OSReport("Error DUDvd::Read>fptr=%d\n", mOffset);
+		}
+	}
+	
+	if (mMode == MODE_0 || mMode == MODE_2)
+		mOffset += off + len;
 }

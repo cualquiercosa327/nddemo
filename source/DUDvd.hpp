@@ -17,11 +17,11 @@ class DUDvd
 {
 private:
 	DVDFileInfo *mFileInfo;
-    u32 mLength;
-    u32 mAlignedLength;
-    int mOffset;
-    char *mBuffer;
-    enumDU_DVD_OPEN_MODE mMode;
+	u32 mLength;
+	u32 mAlignedLength;
+	int mOffset;
+	char *mBuffer;
+	enumDU_DVD_OPEN_MODE mMode;
 	
 public:
 	DUDvd();
