@@ -43,7 +43,8 @@ CXX_SRCS = \
 	DTPad.cpp \
 	CSong.cpp \
 	DUMacro.cpp \
-	DUDvd.cpp
+	DUDvd.cpp \
+	DAudio.cpp
 
 ################################################################################
 #

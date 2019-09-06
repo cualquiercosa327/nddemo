@@ -196,7 +196,7 @@ OPTIMIZATIONS = \
 	-inline off
 else
 OPTIMIZATIONS = \
-	-opt level=2, peephole \
+	-opt level=1, peephole \
 	-inline off, auto
 endif
 
@@ -330,7 +330,8 @@ SDK_LIBS = \
 	$(TRK_LIBS) \
 	gd$(LIB_SUFFIX) \
 	si$(LIB_SUFFIX) \
-	exi$(LIB_SUFFIX)
+	exi$(LIB_SUFFIX) \
+	musyx$(LIB_SUFFIX)
 
 ################################################################################
 #
@@ -374,6 +375,7 @@ build: $(PROJECTS)
 
 clean:
 	@echo Cleaning build directories...
+	@rm -rf $(ROOT_PATH)/build
 	@rm -rf $(BIN_ROOT)
 	@rm -rf $(DEP_ROOT)
 	@rm -rf $(OBJ_ROOT)
