@@ -16,6 +16,11 @@ class DTPad
     ~DTPad();
 
     void Read();
+    PADStatus * GetPadStatus(u8 num);
+    s8 StickX(u16 num);
+    s8 StickY(u16 num);
+    bool IsTrg(u16 num, u16 button);
+    bool IsPush(u16 num, u16 button);
 };
 
 #endif
