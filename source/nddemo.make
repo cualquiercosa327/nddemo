@@ -44,7 +44,8 @@ CXX_SRCS = \
 	CSong.cpp \
 	DUMacro.cpp \
 	DUDvd.cpp \
-	DAudio.cpp
+	DAudio.cpp \
+	DGTexMan.cpp
 
 ################################################################################
 #
