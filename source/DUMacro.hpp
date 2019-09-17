@@ -14,12 +14,12 @@ inline void operator delete(void *block)
 	mFree(block);
 }
 
-inline void *operator new(u32 size)
+inline void * operator new(size_t size)
 {
 	return mAlloc(size);
 }
 
-inline void *operator new[](u32 size)
+inline void * operator new[](size_t size)
 {
 	return mAlloc(size);
 }
