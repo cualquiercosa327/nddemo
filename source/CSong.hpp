@@ -8,19 +8,18 @@
 
 class CSong
 {
-private:
+public:
 	int mSongId;
 	int mSeqId;
 	char *mBuffer;
 	int mDelayMode;
 
-public:
 	CSong();
 
 	void DelayDeleteBuffer();
 	void DeleteBuffer();
-	bool PlaySong(SND_GROUPID sgId);
-	bool ReadBuffer(SND_SEQID seqId, char *fileName);
+	int PlaySong(SND_GROUPID sgId);
+	int ReadBuffer(SND_SEQID seqId, char *fileName);
 };
 
 #endif

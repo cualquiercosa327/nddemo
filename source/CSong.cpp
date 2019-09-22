@@ -38,7 +38,7 @@ void CSong::DeleteBuffer()
 	}
 }
 
-bool CSong::PlaySong(SND_GROUPID sgId)
+int CSong::PlaySong(SND_GROUPID sgId)
 {
 	if (mBuffer == NULL)
 		return false;
@@ -61,7 +61,7 @@ bool CSong::PlaySong(SND_GROUPID sgId)
 	return true;
 }
 
-bool CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
+int CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
 {
 	DVDFileInfo fileInfo;
 	u32 length;
