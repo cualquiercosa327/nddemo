@@ -1,5 +1,7 @@
 #include <dolphin.h>
-#include "DTPad.hpp"
+#include "DAudio.hpp"
+
+static DAudio audio;
 
 void iMakeMainHeap();
 
@@ -13,8 +15,28 @@ void main()
     VIInit();
     PADInit();
 
+    audio.Initialize();
+    audio.ReadPoolData("audio/nddemo.pol");
+    audio.ReadProjData("audio/nddemo.prj");
+    audio.ReadSdirData("audio/nddemo.sdr");
+    audio.ReadSampData("audio/nddemo.smp");
+
+    OSReport("Read Audio data\n");
+
+    audio.PushGroupData(GRPGM_Set);
+    audio.PushGroupData(GRPSFXgroup);
+
+    audio.FreeSampBuffer();
+
+    /*
+    CSong song;
+    song.ReadBuffer(0, "audio/entrance.sng");
+    audio.PlaySong(&song);
+    */
+
     while(TRUE)
     {
+        VIWaitForRetrace();
     }
 }
 
@@ -45,10 +67,3 @@ void iMakeMainHeap()
     OSSetArenaLo(newArenaHi);
 
 }
-
-/*
-void operator delete(void * block)
-{
-    mFree(block);
-}
-*/
