@@ -1,6 +1,8 @@
 #ifndef INCLUDE_DGTEXMAN_HPP
 #define INCLUDE_DGTEXMAN_HPP
 
+#pragma inline_depth(smart)
+
 #include <dolphin.h>
 
 #include "DUMacro.hpp"
@@ -13,18 +15,25 @@ class DGTexMan
     u16 mNumTextures;
     u16 mReferCount;
     u16 mUnk0004;
-    char ** mNames;
+    char * mNames;
     DGTexture ** mTextures;
-    u8 mIsMipMap;
-    u8 mIsExpMipMap;
+    GXBool mIsMipMap;
+    GXBool mIsExpMipMap;
 
     
     DGTexMan(u16 unk);
     ~DGTexMan();
 
     void LoadTexture(char * texture);
-    void EnableMipMap(u8 flag);
-    void EnableExpensiveMipMap(u8 flag);
+    u16 AttachTexture(u16 handle);
+    void DetachTexture(u16 handle);
+    u16 GetWidth(u16 handle);
+    u16 GetHeight(u16 handle);
+    GXBool InitTexObj(GXTexObj * texObj, u16 handle, GXTexWrapMode wrapS, GXTexWrapMode wrapT);
+    inline DGTexture * GetTexture(u16 handle);
+    inline void DeleteTexture(u16 handle);
+    void EnableMipMap(GXBool flag);
+    void EnableExpensiveMipMap(GXBool flag);
 };
 
 #endif
