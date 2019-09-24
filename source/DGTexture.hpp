@@ -8,38 +8,38 @@
 
 struct DTX
 {
-    char version;
-    char format;
-    char width;
-    char height;
-    int  length;
-    char mipLevel;
-    char padding[23];
+    u8 version;
+    u8 format;
+    u8 width;
+    u8 height;
+    u32 length;
+    u8 mipLevel;
+    u8 padding[23];
 };
 
 class DGTexture
 {
 private:
 	short mReferCount;
-	char *mImagePtr;
-	short mWidth;
-	short mHeight;
-	int mFormat;
-	char mMipLevel;
+	void *mImagePtr;
+	u16 mWidth;
+	u16 mHeight;
+	GXTexFmt mFormat;
+	u8 mMipLevel;
 
 public:
 	DGTexture();
 	~DGTexture();
 	
-	int DecRefer();
-	int IncRefer();
+	short DecRefer();
+	short IncRefer();
 	
-	int GetFormat();
-	short GetHeight();
-	short GetWidth();
-	char GetMipLevel();
+	GXTexFmt GetFormat();
+	u16 GetHeight();
+	u16 GetWidth();
+	u8 GetMipLevel();
 	
-	char *GetImagePtr();
+	void *GetImagePtr();
 	
 	bool LoadDTX(char *fileName);
 };

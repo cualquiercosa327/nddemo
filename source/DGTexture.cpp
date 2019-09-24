@@ -6,7 +6,7 @@ DGTexture::DGTexture()
 	this->mImagePtr   = NULL;
 	this->mWidth      = 0;
 	this->mHeight     = 0;
-	this->mFormat     = 5;
+	this->mFormat     = GX_TF_RGB5A3;
 	this->mMipLevel   = 0;
 }
 
@@ -22,49 +22,51 @@ DGTexture::~DGTexture()
 	}
 }
 
-int DGTexture::DecRefer()
+short DGTexture::DecRefer()
 {	
 	if (mReferCount != 0)
+	{
 		return --mReferCount;
-	
-	OSReport("Error DGTexture::DecRefer  ReferCount<0\n");
-	return 0;	
+	}
+	else
+	{
+		OSReport("Error DGTexture::DecRefer  ReferCount<0\n");
+		return 0;
+	}
 }
 
-int DGTexture::IncRefer()
+short DGTexture::IncRefer()
 {
 	return ++mReferCount;
 }
 
-int DGTexture::GetFormat()
+GXTexFmt DGTexture::GetFormat()
 {
 	return mFormat;
 }
 
-short DGTexture::GetHeight()
+u16 DGTexture::GetHeight()
 {
 	return mHeight;
 }
 
-short DGTexture::GetWidth()
+u16 DGTexture::GetWidth()
 {
 	return mWidth;
 }
 
-char DGTexture::GetMipLevel()
+u8 DGTexture::GetMipLevel()
 {
 	return mMipLevel;
 }
 
-char *DGTexture::GetImagePtr()
+void *DGTexture::GetImagePtr()
 {
 	return mImagePtr;
 }
 
 bool DGTexture::LoadDTX(char *fileName)
-{
-	DTX *dtx;
-	
+{	
 	if (mImagePtr)
 	{
 		delete mImagePtr;
@@ -79,7 +81,7 @@ bool DGTexture::LoadDTX(char *fileName)
 		return false;
 	}
 	
-	dtx = new DTX;
+	DTX *dtx = new DTX;
 	
 	dvd.Read(dtx, sizeof(DTX), 0);
 	
@@ -95,17 +97,14 @@ bool DGTexture::LoadDTX(char *fileName)
 		return false;
 	}
 	
-	mFormat   = dtx->format;
+	mFormat   = (GXTexFmt)dtx->format;
 	mWidth    = 1 << dtx->width;
 	mHeight   = 1 << dtx->height;
-	mMipLevel = dtx->mipLevel;
+	mMipLevel = dtx->mipLevel;	
+	mImagePtr = mAlloc(dtx->length);
 	
-	mImagePtr = new char[dtx->length];
-	
-	dvd.Read(mImagePtr, dtx->length, 0);
-	
-	DCFlushRange(mImagePtr, dtx->length);
-	
+	dvd.Read(mImagePtr, dtx->length, 0);	
+	DCFlushRange(mImagePtr, dtx->length);	
 	dvd.Close();
 	
 	if (dtx)
