@@ -8,36 +8,38 @@
 
 class DGCamera
 {
+    
     public:
-
-    DGPosition mPosition;
-    Mtx mCamMtx;
 
     enum enumDG_RENDMAN_TARGET_MODE
     {
-        TARGET_MODE_NULL = 0,
+        DGR_TARGET_POSITION,
     };
+
+    DGPosition mPosition;
+    Mtx44 mCamMtx;
+    Mtx mLightMtx;
+    Mtx mLight2Mtx;
+    float mNearDistance;
+    float mFarDistance;
+    Vec mCamUp;
+    Vec mTargetPos;
+    enumDG_RENDMAN_TARGET_MODE mMode;
+    GXColor mFogColor;
+    GXFogType mFogType;
+    float mFogStartZ;
+    float mFogEndZ;
 
     DGCamera();
     ~DGCamera();
 
     void SetCameraFrustum(float topEdge, float leftEdge, float nearDistance, float farDistance);
-    void SetCameraFrustumUpper(float t, float b, float l, float r);
-    void SetCameraFrustumLower(float t, float b, float l, float r, float n);
-    void SetLightFrustum(float t, float b, float l);
-    void SetCamUp(Vec & up);
-    void SetTargetPos(Vec & position);
-    void SetTargetPos();
+    void SetCameraFrustumUpper(float topEdge, float leftEdge, float nearDistance, float farDistance);
+    void SetCameraFrustumLower(float topEdge, float leftEdge, float nearDistance, float farDistance, float range);
+    void SetLightFrustrum(float height, float width, float nearZ);
     void SetTargetMode(enumDG_RENDMAN_TARGET_MODE mode);
-    void SetCamera(Mtx m);
-    void SetProjectionMtx();
-    void GetViewMtx(Mtx m);
-    void GetLightMtx(Mtx m);
-    void GetLightMtxYInverse(Mtx m);
-    void SetFogType(GXFogType type);
-    void SetFogRange(float rng1, float rng2);
-    void SetFogRangeRatio(float rng1, float rng2);
-    void SetFogColor(const & GXColor);
+    void SetFogColor(GXColor const & color);
+
 };
 
 #endif

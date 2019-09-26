@@ -1,20 +1,99 @@
 #include "DGCamera.hpp"
 
 DGCamera::DGCamera()
-{
-    mPosition = DGPosition();
-
+{   
     SetCameraFrustum(24.0f, 32.0f, 16.0f, 1024.0f);
-    SetLightFrustum(24.0f, 32.0f, 16.0f);
+    SetLightFrustrum(24.0f, 32.0f, 16.0f);
 }
 
-void DGCamera::SetCameraFrustum(float topEdge, float leftEdge, float nearDistance, float farDistance);
+void DGCamera::SetCameraFrustum(float topEdge, float leftEdge, float nearDistance, float farDistance)
 {
-    GXSetCopyClamp(GX_CLAMP_TOP | GX_CLAMP_BOTTOM);
+    mNearDistance = nearDistance;
+    mFarDistance = farDistance;
+    
+    GXSetCopyClamp((GXFBClamp)(GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
 
-    MTXFrustum(&mCamMtx, topEdge * 0.5f, -topEdge * 0.5f, 
-    -leftEdge * 0.5f, 
-    leftEdge * 0.5f, 
-    nearDistance, 
-    farDistance);
+    float scale = 0.5f;
+
+    MTXFrustum
+    (
+        mCamMtx, 
+        topEdge * scale, 
+        -topEdge * scale, 
+        -leftEdge * scale, 
+        leftEdge * scale, 
+        nearDistance, 
+        farDistance
+    );
+}
+
+void DGCamera::SetCameraFrustumUpper(float topEdge, float leftEdge, float nearDistance, float farDistance)
+{
+
+    mNearDistance = nearDistance;
+    mFarDistance = farDistance;
+
+    float scale = 0.5f;
+    
+    MTXFrustum
+    (
+        mCamMtx,
+        topEdge * scale,
+        -topEdge * scale,
+        -leftEdge * scale,
+        leftEdge * scale,
+        nearDistance,
+        farDistance
+    );
+}
+
+void DGCamera::SetCameraFrustumLower(float topEdge, float leftEdge, float nearDistance, float farDistance, float range)
+{
+    mNearDistance = nearDistance;
+    mFarDistance  = farDistance;
+
+    float topScale =  2.0f / range;
+    float leftScale = leftEdge * 0.5f;
+
+    MTXFrustum
+    (
+        mCamMtx,
+        topScale * topEdge,
+        -topEdge + topScale * topEdge,
+        -leftScale,
+        leftScale,
+        nearDistance,
+        farDistance
+    );
+}
+
+void DGCamera::SetLightFrustrum(float height, float width, float nearZ) 
+{
+    float scale = 0.5f;
+    
+    MTXLightFrustum
+    (
+        mLightMtx,
+        (height * scale), (-height * scale),
+        (-width * scale), (width * scale),
+        nearZ, 0.5f, 0.5f, 0.5f, 0.5f
+    );
+
+    MTXLightFrustum
+    (
+        mLight2Mtx,
+        (height * scale), (-height * scale),
+        (-width * scale), (width * scale),
+        nearZ, 0.5f, -0.5F, 0.5f, 0.5f
+    );
+}
+
+void DGCamera::SetTargetMode(enumDG_RENDMAN_TARGET_MODE mode)
+{
+    mMode = mode;
+}
+
+void DGCamera::SetFogColor(GXColor const & color)
+{
+    mFogColor = color;
 }
