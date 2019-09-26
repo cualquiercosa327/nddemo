@@ -37,7 +37,12 @@ class DGCamera
     void SetCameraFrustumUpper(float topEdge, float leftEdge, float nearDistance, float farDistance);
     void SetCameraFrustumLower(float topEdge, float leftEdge, float nearDistance, float farDistance, float range);
     void SetLightFrustrum(float height, float width, float nearZ);
+    void SetCamUp(Vec up);
+    void SetTargetPos(Vec position);
+    Vec GetTargetPos();
     void SetTargetMode(enumDG_RENDMAN_TARGET_MODE mode);
+    void SetCamera(Mtx mtx);
+    void SetProjectionMtx();
     void SetFogColor(GXColor const & color);
 
 };
