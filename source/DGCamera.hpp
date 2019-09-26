@@ -44,6 +44,7 @@ class DGCamera
     void SetCamera(Mtx mtx);
     void SetProjectionMtx();
     void SetFogColor(GXColor const & color);
+    void SetFogRangeRatio(float start, float end);
 
 };
 

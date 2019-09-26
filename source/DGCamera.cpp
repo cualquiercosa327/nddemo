@@ -121,6 +121,7 @@ void DGCamera::SetCamera(Mtx mtx)
     
     SetProjectionMtx();
 
+    /*
     addi      r3, r30, 0
     addi      r4, r31, 0
     bl        GetViewMtx__8DGCameraFRA3_A4_f # DGCamera::GetViewMtx((float (&)[3][4]))
@@ -139,6 +140,7 @@ void DGCamera::SetCamera(Mtx mtx)
     mtlr      r0
     addi      r1, r1, 0x20
     blr
+    */
 }
 
 void DGCamera::SetProjectionMtx()
@@ -151,7 +153,7 @@ void DGCamera::SetFogColor(GXColor const & color)
     mFogColor = color;
 }
 
-void DGCamera::SetFogRange(float start, float end)
+void DGCamera::SetFogRangeRatio(float start, float end)
 {
     mFogStartZ = mNearDistance + (start * (mFarDistance - mNearDistance));
     mFogEndZ = mNearDistance + (end * (mFarDistance - mNearDistance))
