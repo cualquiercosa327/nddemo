@@ -14,7 +14,7 @@ DGPosition::DGPosition()
 	mTransMtx.y = 1.f;
 	mTransMtx.z = 1.f;
 
-	PSMTXIdentity(mMtx);
+	MTXIdentity(mMtx);
 	
 	mIsProcessed = false;
 }
@@ -84,7 +84,7 @@ void DGPosition::GetTransMtx(Mtx &mtx)
 		mIsProcessed = true;
 	}
 	
-	PSMTXCopy(mMtx, mtx);
+	MTXCopy(mMtx, mtx);
 }
 
 void DGPosition::LimitRotation()

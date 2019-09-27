@@ -7,14 +7,13 @@
 
 class DGPosition
 {
-private:
+public:
 	Vec mPosition;
 	Vec mRotation;
 	Vec mTransMtx;
 	Mtx mMtx;
 	bool mIsProcessed;
 	
-public:
 	DGPosition();
 	~DGPosition();
 	

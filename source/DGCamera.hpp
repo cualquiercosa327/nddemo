@@ -7,45 +7,48 @@
 #include "DGPosition.hpp"
 
 class DGCamera
+	: private DGPosition
 {
-    
-    public:
+public:
+	enum enumDG_RENDMAN_TARGET_MODE
+	{
+		DGR_TARGET_POSITION,
+		DGR_TARGET_UNK_1
+	};
 
-    enum enumDG_RENDMAN_TARGET_MODE
-    {
-        DGR_TARGET_POSITION,
-    };
+	Mtx44 mCamMtx;
+	Mtx mLightMtx;
+	Mtx mLight2Mtx;
+	float mNearDistance;
+	float mFarDistance;
+	Vec mCamUp;
+	Vec mTargetPos;
+	enumDG_RENDMAN_TARGET_MODE mMode;
+	GXColor mFogColor;
+	GXFogType mFogType;
+	float mFogStartZ;
+	float mFogEndZ;
 
-    DGPosition mPosition;
-    Mtx44 mCamMtx;
-    Mtx mLightMtx;
-    Mtx mLight2Mtx;
-    float mNearDistance;
-    float mFarDistance;
-    Vec mCamUp;
-    Vec mTargetPos;
-    enumDG_RENDMAN_TARGET_MODE mMode;
-    GXColor mFogColor;
-    GXFogType mFogType;
-    float mFogStartZ;
-    float mFogEndZ;
+	DGCamera();
+	~DGCamera();
 
-    DGCamera();
-    ~DGCamera();
-
-    void SetCameraFrustum(float topEdge, float leftEdge, float nearDistance, float farDistance);
-    void SetCameraFrustumUpper(float topEdge, float leftEdge, float nearDistance, float farDistance);
-    void SetCameraFrustumLower(float topEdge, float leftEdge, float nearDistance, float farDistance, float range);
-    void SetLightFrustrum(float height, float width, float nearZ);
-    void SetCamUp(Vec up);
-    void SetTargetPos(Vec position);
-    Vec GetTargetPos();
-    void SetTargetMode(enumDG_RENDMAN_TARGET_MODE mode);
-    void SetCamera(Mtx mtx);
-    void SetProjectionMtx();
-    void SetFogColor(GXColor const & color);
-    void SetFogRangeRatio(float start, float end);
-
+	void GetLightMtx(Mtx &mtx);
+	void GetLightMtxYInverse(Mtx &mtx);
+	Vec  GetTargetPos();
+	void GetViewMtx(Mtx &mtx);
+	void SetCamUp(Vec up);
+	void SetCamera(Mtx &mtx);
+	void SetCameraFrustum(float topEdge, float leftEdge, float nearDistance, float farDistance);
+	void SetCameraFrustumLower(float topEdge, float leftEdge, float nearDistance, float farDistance, float range);
+	void SetCameraFrustumUpper(float topEdge, float leftEdge, float nearDistance, float farDistance);
+	void SetFogColor(GXColor const &color);
+	void SetFogRange(float start, float end);
+	void SetFogRangeRatio(float start, float end);
+	void SetFogType(GXFogType type);
+	void SetLightFrustrum(float height, float width, float nearZ);
+	void SetProjectionMtx();
+	void SetTargetMode(enumDG_RENDMAN_TARGET_MODE mode);
+	void SetTargetPos(Vec position);
 };
 
 #endif
