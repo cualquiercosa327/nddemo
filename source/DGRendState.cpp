@@ -208,3 +208,143 @@ DGRendState::DGRendState()
     MTXIdentity(mMtx1);     // useless
     GXLoadTexMtxImm(mMtx1, GX_IDENTITY, GX_MTX2x4);
 }
+
+void DGRendState::SetChan0AmbColor(GXColor & color)
+{
+    GXColor ambColor = mAmbColor;
+    
+    if (mAmbColor.r == color.r)
+    {
+        if (mAmbColor.g == color.g)
+        {
+            if (mAmbColor.b == color.b)
+            {
+                if (mAmbColor.a == color.a) return;
+            }
+        }
+    }
+
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD0);
+    }
+    
+    GXSetChanAmbColor(GX_COLOR0A0, ambColor);
+    
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD1);
+    }
+
+    mAmbColor = color;
+}
+
+void DGRendState::SetChan0MatColor(GXColor & color)
+{
+    GXColor matColor = mMatColor;
+    
+    if (mMatColor.r == color.r)
+    {
+        if (mMatColor.g == color.g)
+        {
+            if (mMatColor.b == color.b)
+            {
+                if (mMatColor.a == color.a) return;
+            }
+        }
+    }
+
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD2);
+    }
+    
+    GXSetChanMatColor(GX_COLOR0A0, matColor);
+    
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD3);
+    }
+
+    mMatColor = color;
+}
+
+void DGRendState::SetChan1AmbColor(GXColor & color)
+{
+    GXColor ambColor = mAmb2Color;
+    
+    if (mAmb2Color.r == color.r)
+    {
+        if (mAmb2Color.g == color.g)
+        {
+            if (mAmb2Color.b == color.b)
+            {
+                if (mAmb2Color.a == color.a) return;
+            }
+        }
+    }
+
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD4);
+    }
+    
+    GXSetChanAmbColor(GX_COLOR1A1, ambColor);
+    
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD5);
+    }
+
+    mAmb2Color = color;
+}
+
+void DGRendState::SetChan1MatColor(GXColor & color)
+{
+    GXColor matColor = mMat2Color;
+    
+    if (mMat2Color.r == color.r)
+    {
+        if (mMat2Color.g == color.g)
+        {
+            if (mMat2Color.b == color.b)
+            {
+                if (mMat2Color.a == color.a) return;
+            }
+        }
+    }
+
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD6);
+    }
+    
+    GXSetChanMatColor(GX_COLOR1A1, matColor);
+    
+    for (s8 i = 0; i < 0; i++)
+    {
+        GXSetDrawSync(0xD7);
+    }
+
+    mMat2Color = color;
+}
+
+void DGRendState::SetNumChans(u8 numChans)
+{
+    if (mNumColorChans != 0)
+    {
+        for (s8 i = 0; i < 0; i++)
+        {
+            GXSetDrawSync(4);
+        }
+
+        GXSetNumChans(numChans);
+
+        for (s8 i = 0; i < 0; i++)
+        {
+            GXSetDrawSync(5);
+        }
+
+        mNumColorChans = numChans;
+    }
+}

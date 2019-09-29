@@ -35,6 +35,12 @@ class DGRendState
 
     DGRendState();
     ~DGRendState();
+
+    void SetChan0AmbColor(GXColor & color);
+    void SetChan0MatColor(GXColor & color);
+    void SetChan1AmbColor(GXColor & color);
+    void SetChan1MatColor(GXColor & color);
+    void SetNumChans(u8 numChans);
 };
 
 #endif
