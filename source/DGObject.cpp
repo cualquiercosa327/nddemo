@@ -1,6 +1,6 @@
 #include "DGObject.hpp"
 
-static const u32 GXTEXMAP_TABLE[GX_MAX_TEXMAP] =
+static const GXTexMapID GXTEXMAP_TABLE[GX_MAX_TEXMAP] =
 {
     GX_TEXMAP0,
     GX_TEXMAP1,
@@ -308,5 +308,45 @@ void DGObject::Draw()
         );
     }
 
-    
+    for (u8 i = 0; i < GX_MAX_TEXMAP; ++i)
+    {
+        if (mHandleArray[i] == 0xFFFF) continue;
+
+        GXTexWrapMode wrapS = GX_CLAMP;
+
+        if (mTexWrapS & (1 << (i * 2)))
+        {
+            wrapS = GX_REPEAT;
+        } else if (mTexWrapS & (2 << (i * 2))) {
+            wrapS = GX_MIRROR;
+        }
+
+        GXTexWrapMode wrapT = GX_CLAMP;
+
+        if (mTexWrapT & (1 << (i * 2))) 
+        {
+            wrapT = GX_REPEAT;
+        } else if (mTexWrapT & (2 << (i * 2))) {
+            wrapT = GX_MIRROR;
+        }
+
+        GXTexObj texObj;
+        mTex->InitTexObj(&texObj, mHandleArray[i], wrapS, wrapT);
+        GXLoadTexObj(&texObj, GXTEXMAP_TABLE[i]);
+    }
+}
+
+void DGObject::SetArrayFormat(u16 arg1, u16 fmt2, u16 fmt3, u16 fmt4)
+{
+    if (mHasNorm)
+    {
+        if (arg1 & 0xE000 != 0x8000)
+        {
+            mVATTable[VAT_POS].mCompType = GX_S8;
+        } else if (arg1 & 0xE000 < 0x8000)
+        {
+            // ...
+        }
+        
+    }
 }

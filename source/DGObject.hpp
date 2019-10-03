@@ -61,12 +61,19 @@ class DGObject
     void * mNormArray;          // 0050
     void * mColorArray;         // 0054
     void * mTexCordArray;       // 0058
+    void * mObjStream;          // 005C
+    void * mDispList;           // 0060
+    u16 mHandleArray[8];        // 0064
+    u16 mTexWrapS;              // 0074
+    u16 mTexWrapT;              // 0076
+    void * mPartsBlock;         // 0078
 
 
     DGObject(DGTexMan * tex);
     ~DGObject();
 
     void Draw();
+    void SetArrayFormat(u16 fmt1, u16 fmt2, u16 fmt3, u16 fmt4);
 };
 
 #endif
