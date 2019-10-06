@@ -1,7 +1,4 @@
-
-#include <dolphin.h>
 #include "DTPad.hpp"
-#include "DUMacro.hpp"
 
 static u32 PadChanMask[PAD_MAX_CONTROLLERS] = {
     PAD_CHAN0_BIT,
@@ -13,7 +10,8 @@ static u32 PadChanMask[PAD_MAX_CONTROLLERS] = {
 DTPad::DTPad()
 {
     PADRead(mPreviousStatus);
-    mMask = 0;
+	
+    mMask   = 0;
     mUnused = 0;
 }
 
@@ -26,28 +24,27 @@ void DTPad::Read()
     mMask = 0;
     
     memcpy(mPreviousStatus, mCurrentStatus, sizeof(PADStatus) * PAD_MAX_CONTROLLERS);
+	
     PADRead(mCurrentStatus);
     PADClamp(mCurrentStatus);
 
-    for (int i = 0; i < PAD_MAX_CONTROLLERS; i++)
+    for (s8 i = 0; i < PAD_MAX_CONTROLLERS; i++)
     {
-        
-        /* ...
-
-        check each controller error status:
-        PAD_ERROR_NONE, PAD_ERR_TRANSFER, and PAD_ERR_NO_CONTROLLER
-
-        if an error is raised, the loop reiterates
-
-        ... */
-
-        mMask |= PadChanMask[i];
+		s8 err = mCurrentStatus[i].err;
+		
+		if (err != PAD_ERR_NONE && 
+			err != PAD_ERR_TRANSFER)
+		{
+			if (err == PAD_ERR_NO_CONTROLLER)
+				mMask |= PadChanMask[i];
+		}
     }
 
-    if (mMask == NULL) PADReset(mMask);
+    if (mMask)
+		PADReset(mMask);
 }
 
-PADStatus * DTPad::GetPadStatus(u8 num)
+PADStatus *DTPad::GetPadStatus(u8 num)
 {
     return &mCurrentStatus[num];
 }
@@ -64,18 +61,18 @@ s8 DTPad::StickY(u16 num)
 
 bool DTPad::IsTrg(u16 num, u16 button)
 {
-    if ((mCurrentStatus[num].button & button) != 0)
+    if ((mCurrentStatus[num].button  & button) != 0 &&
+		(mPreviousStatus[num].button & button) == 0)
     {
-        if ((mPreviousStatus[num].button & button) == 0)
-        {
-            return true;
-        }
+		return true;
     }
-    return false;
+	else
+	{
+		return false;
+	}
 }
 
 bool DTPad::IsPush(u16 num, u16 button)
 {
     return (mCurrentStatus[num].button & button) == button;
 }
-
