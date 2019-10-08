@@ -158,6 +158,8 @@ class DGObject
     void LoadNDMPartsBlock(DUDvd & dvd);
     void oscmdExtend0(u8 *& command);
     void oscmdVtxDesc(u8 *& command);
+    void IncRefer();
+    void DecRefer();
 };
 
 #endif

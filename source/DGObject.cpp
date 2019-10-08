@@ -644,3 +644,29 @@ void DGObject::oscmdVtxDesc(u8 *& command)
 
     command += 2;
 }
+
+void DGObject::IncRefer()
+{
+    for (u8 i = 0; i < 8; i++)
+    {
+        if (mHandleArray[i] == 0xFFFF) continue;
+        mTex->AttachTexture(mHandleArray[i]);
+    }
+    ++mReferCount;
+}
+
+void DGObject::DecRefer()
+{
+    if (!mReferCount)
+    {
+        OSReport("Error DGObject::DecRefer  ReferCount<0\n");
+        return;
+    }
+    
+    for (u8 i = 0; i < 8; i++)
+    {
+        if (mHandleArray[i] == 0xFFFF) continue;
+        mTex->DetachTexture(mHandleArray[i]);
+    }
+    --mReferCount;
+}
