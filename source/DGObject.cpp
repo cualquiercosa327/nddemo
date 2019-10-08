@@ -655,12 +655,12 @@ void DGObject::IncRefer()
     ++mReferCount;
 }
 
-void DGObject::DecRefer()
+u16 DGObject::DecRefer()
 {
     if (!mReferCount)
     {
         OSReport("Error DGObject::DecRefer  ReferCount<0\n");
-        return;
+        return 0;
     }
     
     for (u8 i = 0; i < 8; i++)
@@ -668,5 +668,5 @@ void DGObject::DecRefer()
         if (mHandleArray[i] == 0xFFFF) continue;
         mTex->DetachTexture(mHandleArray[i]);
     }
-    --mReferCount;
+    return --mReferCount;
 }
