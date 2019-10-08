@@ -1,59 +1,14 @@
 #include "DGObject.hpp"
 
-static const GXTexMapID GXTEXMAP_TABLE[GX_MAX_TEXMAP] =
-{
-    GX_TEXMAP0,
-    GX_TEXMAP1,
-    GX_TEXMAP2,
-    GX_TEXMAP3,
-    GX_TEXMAP4,
-    GX_TEXMAP5,
-    GX_TEXMAP6,
-    GX_TEXMAP7
-};
-
-static const u32 TevStageID_TABLE[GX_MAX_TEVSTAGE] =
-{
-    GX_TEVSTAGE0,
-    GX_TEVSTAGE1,
-    GX_TEVSTAGE2,
-    GX_TEVSTAGE3,
-    GX_TEVSTAGE4,
-    GX_TEVSTAGE5,
-    GX_TEVSTAGE6,
-    GX_TEVSTAGE7,
-    GX_TEVSTAGE8,
-    GX_TEVSTAGE9,
-    GX_TEVSTAGE10,
-    GX_TEVSTAGE11,
-    GX_TEVSTAGE12,
-    GX_TEVSTAGE13,
-    GX_TEVSTAGE14,
-    GX_TEVSTAGE15
-};
-
-static const u32 TexCoordID_TABLE[GX_MAX_TEXCOORD + 1] =
-{
-    GX_TEXCOORD0,
-    GX_TEXCOORD1,
-    GX_TEXCOORD2,
-    GX_TEXCOORD3,
-    GX_TEXCOORD4,
-    GX_TEXCOORD5,
-    GX_TEXCOORD6,
-    GX_TEXCOORD7,
-    GX_TEXCOORD_NULL
-};
-
 DGObject::DGObject(DGTexMan * tex)
 {
     mReferCount = 0;
     mTex = tex;
     
-    mHasPos = false;
-    mHasNorm = false;
-    mHasColr = false;
-    mHasTex = false;
+    mPosAttr = GX_NONE;
+    mNormAttr = GX_NONE;
+    mColorAttr = GX_NONE;
+    mTexAttr = GX_NONE;
 
     mVATTable[VAT_POS].mNumComp = GX_POS_XYZ;
     mVATTable[VAT_POS].mCompType = GX_F32;
@@ -81,6 +36,22 @@ DGObject::DGObject(DGTexMan * tex)
     mNormArray = NULL;
     mColorArray = NULL;
     mTexCordArray = NULL;
+    mObjStream = NULL;
+    mDispList = NULL;
+
+    mHandleArray[0] = 0;
+    mHandleArray[1] = 0;
+    mHandleArray[2] = 0;
+    mHandleArray[3] = 0;
+    mHandleArray[4] = 0;
+    mHandleArray[5] = 0;
+    mHandleArray[6] = 0;
+    mHandleArray[7] = 0;
+
+    mTexWrapS = 0;
+    mTexWrapT = 0;
+
+    mPartsBlock = NULL;
 }
 
 DGObject::~DGObject()
@@ -95,11 +66,29 @@ DGObject::~DGObject()
         delete mArrayImg;
         mArrayImg = NULL;
     }
+
+    if (mObjStream != NULL)
+    {
+        delete mObjStream;
+        mObjStream = NULL;
+    }
+
+    if (mDispList != NULL)
+    {
+        delete mDispList;
+        mDispList = NULL;
+    }
+
+    if (mPartsBlock != NULL)
+    {
+        delete mPartsBlock;
+        mPartsBlock = NULL;
+    }
 }
 
 void DGObject::Draw()
 {
-    if (mHasPos)
+    if (mPosAttr != GX_NONE)
     {
         GXSetVtxAttrFmt
         (
@@ -118,7 +107,7 @@ void DGObject::Draw()
         );
     }
     
-    if (mHasNorm)
+    if (mNormAttr != GX_NONE)
     {
         GXSetVtxAttrFmt
         (
@@ -137,7 +126,7 @@ void DGObject::Draw()
         );
     }
 
-    if (mHasColr)
+    if (mColorAttr != GX_NONE)
     {
         GXSetVtxAttrFmt
         (
@@ -177,10 +166,10 @@ void DGObject::Draw()
         );
     }
 
-    if (mHasTex)
+    if (mTexAttr != GX_NONE)
     {
        GXSetVtxAttrFmt
-        (
+       (
             GX_VTXFMT0,
             GX_VA_TEX0,
             mVATTable[VAT_TEXCOORD].mNumComp,
@@ -336,17 +325,322 @@ void DGObject::Draw()
     }
 }
 
-void DGObject::SetArrayFormat(u16 arg1, u16 fmt2, u16 fmt3, u16 fmt4)
+void DGObject::SetArrayFormat(u16 vCompType, u16 nCompType, u16 cCompType, u16 tCompType)
 {
-    if (mHasNorm)
+    if (mNormAttr != GX_NONE)
     {
-        if (arg1 & 0xE000 != 0x8000)
+        switch (vCompType & 0xE000)
         {
-            mVATTable[VAT_POS].mCompType = GX_S8;
-        } else if (arg1 & 0xE000 < 0x8000)
-        {
-            // ...
+            case 0x0000: {
+                mVATTable[VAT_POS].mCompType = GX_U8;
+                break;
+            }
+            case 0x2000: {
+                mVATTable[VAT_POS].mCompType = GX_U16;
+                break;
+            }
+            case 0x8000: {
+                mVATTable[VAT_POS].mCompType = GX_S8;
+                break;
+            }
+            case 0xA000: {
+                mVATTable[VAT_POS].mCompType = GX_S16;
+                break;
+            }
+            case 0xE000: {
+                mVATTable[VAT_POS].mCompType = GX_F32;
+                break;
+            }
+            default: {
+                OSReport("Error:SetArrayFormat(m_VCompType)\n");
+                break;
+            }
         }
-        
+        mVATTable[VAT_POS].mNumComp = ((vCompType & 0x1000) ? GX_POS_XYZ : GX_POS_XY);
+        mVATTable[VAT_POS].mFractional = (vCompType >> 8) & 15;
+        mVATTable[VAT_POS].mStride = (((vCompType >> 13) & 3) + 1) * (((vCompType >> 12) & 1) + 2);
     }
+    if (mNormAttr != GX_NONE)
+    {
+        switch(nCompType & 0xE000)
+        {
+            case 0x8000: {
+                mVATTable[VAT_NORMAL].mCompType = GX_S8;
+                break;
+            }
+            case 0xA000: {
+                mVATTable[VAT_NORMAL].mCompType = GX_S16;
+                break;
+            }
+            case 0xE000: {
+                mVATTable[VAT_NORMAL].mCompType = GX_F32;
+                break;
+            }
+            default: {
+                OSReport("Error:SetArrayFormat(m_NCompType)\n");
+                break;
+            }
+        }
+        mVATTable[VAT_NORMAL].mNumComp = ((nCompType & 0x1000) ? GX_NRM_NBT : GX_NRM_XYZ);
+        mVATTable[VAT_NORMAL].mFractional = (nCompType >> 8) & 15;
+        mVATTable[VAT_NORMAL].mStride = (((nCompType >> 13) & 3) + 1) * 3;
+    }
+    if (mColorAttr != GX_NONE)
+    {
+        switch (cCompType & 0xE000)
+        {
+            case 0x2000: {
+                mVATTable[VAT_COLOR].mCompType = GX_RGB565;
+                break;
+            }
+            case 0x4000: {
+                mVATTable[VAT_COLOR].mCompType = GX_RGB8;
+                break;
+            }
+            case 0x6000: {
+                mVATTable[VAT_COLOR].mCompType = GX_RGBX8;
+                break;
+            }
+            case 0xA000: {
+                mVATTable[VAT_COLOR].mCompType = GX_RGBA4;
+                break;
+            }
+            case 0xC000: {
+                mVATTable[VAT_COLOR].mCompType = GX_RGBA6;
+                break;
+            }
+            case 0xE000: {
+                mVATTable[VAT_COLOR].mCompType = GX_RGBA8;
+                break;
+            }
+            default: {
+                OSReport("Error:SetArrayFormat(m_CCompType)\n");
+                break;
+            }
+        }
+        mVATTable[VAT_COLOR].mNumComp = ((cCompType & 0x1000) ? GX_CLR_RGBA : GX_CLR_RGB);
+        mVATTable[VAT_COLOR].mFractional = ((cCompType >> 13) & 3) + 1;
+    }
+
+    if (mTexAttr != GX_NONE)
+    {
+        switch (tCompType & 0xE000)
+        {
+            case 0x0000: {
+                mVATTable[VAT_TEXCOORD].mCompType = GX_U8;
+                break;
+            }
+            case 0x2000: {
+                mVATTable[VAT_TEXCOORD].mCompType = GX_U16;
+                break;
+            }
+            case 0x8000: {
+                mVATTable[VAT_TEXCOORD].mCompType = GX_S8;
+                break;
+            }
+            case 0xA000: {
+                mVATTable[VAT_TEXCOORD].mCompType = GX_S16;
+                break;
+            }
+            case 0xE000: {
+                mVATTable[VAT_TEXCOORD].mCompType = GX_F32;
+                break;
+            }
+            default: {
+                OSReport("Error:SetArrayFormat(m_TCompType)\n");
+                break;
+            }
+        }
+        mVATTable[VAT_TEXCOORD].mNumComp = ((tCompType & 0x1000) ? GX_TEX_ST : GX_TEX_S);
+        mVATTable[VAT_TEXCOORD].mFractional = (vCompType >> 8) & 15;
+        mVATTable[VAT_TEXCOORD].mStride = (((vCompType >> 13) & 3) + 1) * (((vCompType >> 12) & 1) + 1);
+    }
+}
+
+void DGObject::LoadNDMPartsBlock(DUDvd & dvd)
+{
+    if (mPartsBlock != NULL)
+    {
+        OSReport("DGObject::LoadNDMPartsBlock >McrFree(m_PartsBlock);\n");
+    }
+    
+    if (mPartsBlock != NULL)
+    {
+        delete mPartsBlock;
+        mPartsBlock = NULL;
+    }
+    
+    mPartsBlock = new u8[64];
+
+    if (mPartsBlock == NULL)
+    {
+        OSReport("DGObject::LoadNDMPartsBlock >m_PartsBlock==NULL\n");
+    }
+
+   dvd.Read(mPartsBlock, 64, 0);
+
+   NDMObjBlock * ndmObjectBlock = new NDMObjBlock;
+    
+    if (ndmObjectBlock == NULL)
+    {
+        OSReport("DGObject::LoadNDMPartsBlock >ndmObjectBlock==NULL\n");
+    }
+    
+    dvd.Read(ndmObjectBlock, 32, 0);
+    memcpy(mHandleArray, ndmObjectBlock, 16);
+
+    mTexWrapS = ndmObjectBlock->texWrapS;
+    mTexWrapT = ndmObjectBlock->texWrapT;
+
+    NDMBlock * ndmArrayBlock = new NDMBlock;
+
+    if (ndmArrayBlock == NULL)
+    {
+        OSReport("DGObject::LoadNDMPartsBlock >ndmArrayBlock==NULL\n");
+    }
+
+    dvd.Read(ndmArrayBlock, 32, 0);
+
+    const GXAttrType attrArray[4] =
+    {
+        GX_NONE,
+        GX_DIRECT,
+        GX_INDEX8,
+        GX_INDEX16
+    };
+
+    mPosAttr  = attrArray[(ndmArrayBlock->cmptField >> 6) & 3];
+    mNormAttr = attrArray[(ndmArrayBlock->cmptField >> 4) & 3];
+    mColorAttr = attrArray[(ndmArrayBlock->cmptField >> 2) & 3];
+    mTexAttr  = attrArray[ndmArrayBlock->cmptField & 3];
+
+    SetArrayFormat
+    (
+        ndmArrayBlock->vCompType, 
+        ndmArrayBlock->nCompType, 
+        ndmArrayBlock->cCompType, 
+        ndmArrayBlock->tCompType
+    );
+
+    if (mArrayImg != NULL)
+    {
+        delete mArrayImg;
+        mArrayImg = NULL;
+    }
+
+    mImgLen = ndmArrayBlock->imgLen;
+    if (mImgLen != 0)
+    {
+        mArrayImg = new u8[mImgLen];
+        if (mArrayImg == NULL) OSReport("DGObject::LoadNDMPartsBlock >m_ArrayImg==NULL\n");
+        
+        dvd.Read(mArrayImg, mImgLen, 0);
+        DCFlushRange(mArrayImg, mImgLen);
+
+        mNormArray = &mArrayImg[ndmArrayBlock->normOff];
+        mColorArray = &mArrayImg[ndmArrayBlock->colorOff];
+        mTexCordArray = &mArrayImg[ndmArrayBlock->texCordOff];
+    }
+
+    if (mObjStream != NULL) OSReport("DGObject::LoadNDMPartsBlock >McrFree(m_ObjSteram);\n");
+    if (mObjStream != NULL)
+    {
+        delete mObjStream;
+        mObjStream = NULL;
+    }
+
+    if (ndmObjectBlock->streamLen != 0)
+    {
+        mObjStream = new u8[ndmObjectBlock->streamLen];
+        if (mObjStream == NULL) OSReport("DGObject::LoadNDMPartsBlock >m_ObjSteram==NULL\n");
+        
+        dvd.Read(mObjStream, ndmObjectBlock->streamLen, 0);
+    }
+
+    if (mDispList != NULL) OSReport("DGObject::LoadNDMPartsBlock >McrFree(m_DispList);\n");
+    if (mDispList != NULL)
+    {
+        delete mDispList;
+        mDispList = NULL;
+    }
+
+    if (ndmObjectBlock->dispLen != 0)
+    {
+        mDispList = new u8[ndmObjectBlock->dispLen];
+        if (mDispList == NULL) OSReport("DGObject::LoadNDMPartsBlock >m_DispList==NULL\n");
+        
+        dvd.Read(mDispList, ndmObjectBlock->dispLen, 0);
+        DCFlushRange(mDispList, ndmObjectBlock->dispLen);
+    }
+
+    if (ndmObjectBlock != NULL) delete ndmObjectBlock;
+    if (ndmArrayBlock != NULL) delete ndmArrayBlock;
+}
+
+void DGObject::oscmdExtend0(u8 *& command)
+{
+    switch (*command & 0x0F)
+    {
+        case 0: {
+            ++command;
+            break;
+        }
+        default: {
+            OSReport("Error DGObject::oscmdExtend0>");
+            ++command;
+            break;
+        }
+    }
+}
+
+void DGObject::oscmdVtxDesc(u8 *& command)
+{
+    if ((*command & 0x01) == 0)
+    {
+        GXSetVtxDesc(GX_VA_POS, GX_NONE);
+    }
+    else
+    {
+        GXSetVtxDesc(GX_VA_POS, mPosAttr);
+    }
+
+    if ((*command & 0x02) == 0)
+    {
+        GXSetVtxDesc(GX_VA_NRM, GX_NONE);
+    }
+    else
+    {
+        GXSetVtxDesc(GX_VA_NRM, mNormAttr);
+    }
+
+    if ((*command & 0x04) == 0)
+    {
+        GXSetVtxDesc(GX_VA_CLR0, GX_NONE);
+    }
+    else
+    {
+        GXSetVtxDesc(GX_VA_CLR0, mColorAttr);
+    }
+
+    if ((*command & 0x08) == 0)
+    {
+        GXSetVtxDesc(GX_VA_CLR1, GX_NONE);
+    }
+    else
+    {
+        GXSetVtxDesc(GX_VA_CLR1, mColorAttr);
+    }
+
+    u8 texIndx;
+    for (texIndx = 0; texIndx < command[1]; texIndx++)
+    {
+        GXSetVtxDesc(TexAttrBlock[texIndx], mTexAttr);
+    }
+
+    for (int i = texIndx; i < 8; i++)
+    {
+        GXSetVtxDesc(TexAttrBlock[i], GX_NONE);
+    }
+
+    command += 2;
 }
