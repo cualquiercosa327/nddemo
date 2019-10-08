@@ -670,3 +670,25 @@ u16 DGObject::DecRefer()
     }
     return --mReferCount;
 }
+
+// needs double checking
+void DGObject::MakeTexTransTable(u16 * trans)
+{
+    for (u8 i = 0; i < 8; i++)
+    {
+        if (mHandleArray[i] != 0xFFFF)
+        {
+            mHandleArray[i] = trans[1 << i];
+        }
+    }
+}
+
+void * DGObject::GetPartsBlock()
+{
+    return &mPartsBlock;
+}
+
+BOOL DGObject::IsNull()
+{
+    return (mPosAttr == GX_NONE) ? true : false;
+}

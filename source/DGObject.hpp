@@ -160,6 +160,9 @@ class DGObject
     void oscmdVtxDesc(u8 *& command);
     void IncRefer();
     u16 DecRefer();
+    void MakeTexTransTable(u16 * trans);
+    void * GetPartsBlock();
+    BOOL IsNull();
 };
 
 #endif
