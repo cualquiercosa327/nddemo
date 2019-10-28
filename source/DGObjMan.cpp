@@ -1,11 +1,11 @@
 #include "DGObjMan.hpp"
 
 DGObjMan::DGObjMan(u16 amount)
-{	
+{
 	mNumObjectsAllocated = amount;
 	mNumObjectsAdded = 0;
-	mObjects = new DGObject *[mNumObjectsAllocated];
-	memset(mObjects, 0, mNumObjectsAllocated * sizeof(DGObject *));
+	mObjects = new DGObject * [mNumObjectsAllocated];
+	memset(mObjects, 0, mNumObjectsAllocated * sizeof(DGObject*));
 }
 
 DGObjMan::~DGObjMan()
@@ -21,7 +21,7 @@ DGObjMan::~DGObjMan()
 			}
 		}
 	}
-	
+
 	if (mObjects != NULL)
 	{
 		delete mObjects;
@@ -29,8 +29,8 @@ DGObjMan::~DGObjMan()
 	}
 }
 
-u16 DGObjMan::AddObject(DGObject *obj)
-{	
+u16 DGObjMan::AddObject(DGObject* obj)
+{
 	for (u16 handle = 0; ; handle++)
 	{
 		if (handle < mNumObjectsAllocated)
@@ -55,13 +55,13 @@ u16 DGObjMan::AddObject(DGObject *obj)
 
 u16 DGObjMan::AttachObject(u16 handle)
 {
-	DGObject *object;
-		
+	DGObject* object;
+
 	if (handle < mNumObjectsAllocated)
 		object = mObjects[handle];
 	else
 		object = NULL;
-	
+
 	if (object)
 	{
 		object->IncRefer();
@@ -77,13 +77,13 @@ u16 DGObjMan::AttachObject(u16 handle)
 
 void DGObjMan::DetachObject(u16 handle)
 {
-	DGObject *object;
+	DGObject* object;
 
 	if (handle < mNumObjectsAllocated)
 		object = mObjects[handle];
 	else
 		object = NULL;
-		
+
 	if (object)
 	{
 		if (object->DecRefer() == 0 &&
@@ -96,7 +96,7 @@ void DGObjMan::DetachObject(u16 handle)
 					delete mObjects[handle];
 					mObjects[handle] = NULL;
 				}
-				
+
 				mNumObjectsAdded--;
 			}
 		}
@@ -107,10 +107,10 @@ void DGObjMan::DetachObject(u16 handle)
 	}
 }
 
-DGObject *DGObjMan::GetObject(u16 handle)
+DGObject* DGObjMan::GetObject(u16 handle)
 {
 	if (handle < mNumObjectsAllocated)
 		return mObjects[handle];
-	
+
 	return NULL;
 }

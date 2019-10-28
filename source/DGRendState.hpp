@@ -5,42 +5,42 @@
 
 class DGRendState
 {
-    public:
+public:
 
-    Mtx mMtx1;
-    Mtx mMtx2;
-    int mUnk0060;
-    int mUnk0064;
-    int mUnk0068;
+	Mtx mMtx1;
+	Mtx mMtx2;
+	int mUnk0060;
+	int mUnk0064;
+	int mUnk0068;
 
-    GXColor mAmbColor;      // 006C
-    GXColor mMatColor;      // 0070
-    GXColor mAmb2Color;     // 0074
-    GXColor mMat2Color;     // 0078
+	GXColor mAmbColor;      // 006C
+	GXColor mMatColor;      // 0070
+	GXColor mAmb2Color;     // 0074
+	GXColor mMat2Color;     // 0078
 
-    u8 mNumColorChans;      // 007C
-    
-    u8 mUnk007D;
-    u8 mUnk007E;
-    u8 mUnk007F;
+	u8 mNumColorChans;      // 007C
 
-    int mUnk0080;
-    int mUnk0084;
-    int mUnk0088;
-    int mUnk008C;
-    int mUnk0090;
-    int mUnk0094;
-    int mUnk0098;
-    int mUnk009C;
+	u8 mUnk007D;
+	u8 mUnk007E;
+	u8 mUnk007F;
 
-    DGRendState();
-    ~DGRendState();
+	int mUnk0080;
+	int mUnk0084;
+	int mUnk0088;
+	int mUnk008C;
+	int mUnk0090;
+	int mUnk0094;
+	int mUnk0098;
+	int mUnk009C;
 
-    void SetChan0AmbColor(GXColor & color);
-    void SetChan0MatColor(GXColor & color);
-    void SetChan1AmbColor(GXColor & color);
-    void SetChan1MatColor(GXColor & color);
-    void SetNumChans(u8 numChans);
+	DGRendState();
+	~DGRendState();
+
+	void SetChan0AmbColor(GXColor& color);
+	void SetChan0MatColor(GXColor& color);
+	void SetChan1AmbColor(GXColor& color);
+	void SetChan1MatColor(GXColor& color);
+	void SetNumChans(u8 numChans);
 };
 
 #endif

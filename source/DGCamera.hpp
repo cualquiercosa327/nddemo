@@ -32,16 +32,16 @@ public:
 	DGCamera();
 	~DGCamera();
 
-	void GetLightMtx(Mtx &mtx);
-	void GetLightMtxYInverse(Mtx &mtx);
+	void GetLightMtx(Mtx& mtx);
+	void GetLightMtxYInverse(Mtx& mtx);
 	Vec  GetTargetPos();
-	void GetViewMtx(Mtx &mtx);
+	void GetViewMtx(Mtx& mtx);
 	void SetCamUp(Vec up);
-	void SetCamera(Mtx &mtx);
+	void SetCamera(Mtx& mtx);
 	void SetCameraFrustum(float topEdge, float leftEdge, float nearDistance, float farDistance);
 	void SetCameraFrustumLower(float topEdge, float leftEdge, float nearDistance, float farDistance, float range);
 	void SetCameraFrustumUpper(float topEdge, float leftEdge, float nearDistance, float farDistance);
-	void SetFogColor(GXColor const &color);
+	void SetFogColor(GXColor const& color);
 	void SetFogRange(float start, float end);
 	void SetFogRangeRatio(float start, float end);
 	void SetFogType(GXFogType type);

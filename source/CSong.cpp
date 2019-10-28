@@ -2,9 +2,9 @@
 
 CSong::CSong()
 {
-	mBuffer    = NULL;
-	mSeqId     = SND_SEQ_ERROR_ID;
-	mSongId	   = SND_ID_ERROR;
+	mBuffer = NULL;
+	mSeqId = SND_SEQ_ERROR_ID;
+	mSongId = SND_ID_ERROR;
 	mDelayMode = 0;
 }
 
@@ -18,13 +18,13 @@ void CSong::DelayDeleteBuffer()
 		{
 			delete mBuffer;
 			mDelayMode = 0;
-			mBuffer	   = NULL;
+			mBuffer = NULL;
 		}
 	}
 }
 
 void CSong::DeleteBuffer()
-{	
+{
 	if (mBuffer)
 	{
 		if (sndSeqGetValid(mSongId))
@@ -33,7 +33,7 @@ void CSong::DeleteBuffer()
 		{
 			delete mBuffer;
 			mDelayMode = 0;
-			mBuffer	   = NULL;
+			mBuffer = NULL;
 		}
 	}
 }
@@ -42,31 +42,31 @@ int CSong::PlaySong(SND_GROUPID sgId)
 {
 	if (mBuffer == NULL)
 		return false;
-	
+
 	if (mSongId >= 0)
 	{
 		mSeqId = sndSeqPlay(sgId, mSongId, mBuffer, NULL);
-	
+
 		if (mSeqId == SND_SEQ_ERROR_ID)
 		{
-			OSReport("Play song error %d\n", mSongId);		 
+			OSReport("Play song error %d\n", mSongId);
 			return false;
 		}
-	
+
 		sndSeqVolume(127, 0, mSeqId, SND_SEQVOL_CONTINUE);
-	
+
 		OSReport("Play song %d\n", mSongId);
 	}
-	
+
 	return true;
 }
 
-int CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
+int CSong::ReadBuffer(SND_SEQID seqId, char* fileName)
 {
 	DVDFileInfo fileInfo;
 	u32 length;
-	
-	if (mBuffer) 
+
+	if (mBuffer)
 		return true;
 
 	if (!DVDOpen(fileName, &fileInfo))
@@ -75,7 +75,7 @@ int CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
 		return false;
 	}
 
-	length  = ALIGN(fileInfo.length, 0x20);
+	length = ALIGN(fileInfo.length, 0x20);
 	mBuffer = new char[length];
 
 	if (mBuffer == NULL)
@@ -96,7 +96,7 @@ int CSong::ReadBuffer(SND_SEQID seqId, char *fileName)
 
 	DVDClose(&fileInfo);
 
-	mSongId	= seqId;
+	mSongId = seqId;
 	mDelayMode = 1;
 
 	return true;

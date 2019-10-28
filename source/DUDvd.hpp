@@ -16,13 +16,13 @@ enum enumDU_DVD_OPEN_MODE
 class DUDvd
 {
 private:
-	DVDFileInfo *mFileInfo;
+	DVDFileInfo* mFileInfo;
 	u32 mLength;
 	u32 mAlignedLength;
 	int mOffset;
-	char *mBuffer;
+	char* mBuffer;
 	enumDU_DVD_OPEN_MODE mMode;
-	
+
 public:
 	DUDvd();
 	~DUDvd();
@@ -30,9 +30,9 @@ public:
 	void Close();
 	void Init();
 	void InitDVD();
-	bool Open(char *fileName, enumDU_DVD_OPEN_MODE mode);
-	void Read(void *out, u32 len, int off);
-	
+	bool Open(char* fileName, enumDU_DVD_OPEN_MODE mode);
+	void Read(void* out, u32 len, int off);
+
 	static bool m_InitDVD;
 };
 

@@ -18,7 +18,7 @@ public:
 	~DTPad();
 
 	void Read();
-	PADStatus * GetPadStatus(u8 num);
+	PADStatus* GetPadStatus(u8 num);
 	s8 StickX(u16 num);
 	s8 StickY(u16 num);
 	bool IsTrg(u16 num, u16 button);

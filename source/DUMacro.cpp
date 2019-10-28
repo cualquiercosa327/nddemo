@@ -1,12 +1,12 @@
 #include "DUMacro.hpp"
 
-void *mAlloc(u32 size)
+void* mAlloc(u32 size)
 {
-	OSThread *thread;
+	OSThread* thread;
 	OSPriority priority;
-	void *ptr;
+	void* ptr;
 
-	thread   = OSGetCurrentThread();
+	thread = OSGetCurrentThread();
 	priority = OSGetThreadPriority(thread);
 
 	OSSetThreadPriority(thread, 15);
@@ -23,12 +23,12 @@ void *mAlloc(u32 size)
 	return ptr;
 }
 
-void mFree(void *ptr)
+void mFree(void* ptr)
 {
-	OSThread *thread;
+	OSThread* thread;
 	OSPriority priority;
 
-	thread   = OSGetCurrentThread();
+	thread = OSGetCurrentThread();
 	priority = OSGetThreadPriority(thread);
 
 	OSSetThreadPriority(thread, 15);

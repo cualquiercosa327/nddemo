@@ -15,20 +15,20 @@ static SND_HOOKS m_sndHooks = { mAlloc, mFree };
 class DAudio
 {
 private:
-    u32 mAramBlocks[NUM_ARAM_BLOCKS];
-    char *mPoolData;
-    char *mProjData;
-    char *mSampData;
-    char *mSdirData;
-    CSong *mSong;
-    u16 mSgId;
-    u8 mIsSeqMuted;
-    u8 mIsSeMuted;
-    u8 mVolume;
-    SND_AUX_REVERBHI mReverb;
-    SND_AUX_CHORUS mChorus;
-    long mAutoDemo;
-	
+	u32 mAramBlocks[NUM_ARAM_BLOCKS];
+	char* mPoolData;
+	char* mProjData;
+	char* mSampData;
+	char* mSdirData;
+	CSong* mSong;
+	u16 mSgId;
+	u8 mIsSeqMuted;
+	u8 mIsSeMuted;
+	u8 mVolume;
+	SND_AUX_REVERBHI mReverb;
+	SND_AUX_CHORUS mChorus;
+	long mAutoDemo;
+
 public:
 	DAudio();
 	~DAudio();
@@ -41,15 +41,15 @@ public:
 	void Initialize();
 	void Jump();
 	void MuteAll(int dipVolume);
-	int PlaySong(CSong *song);
+	int PlaySong(CSong* song);
 	int PlaySongFadeOut();
 	bool PushGroupData(SND_GROUPID gId);
 	void Quit();
-	char *ReadDataAlloc(char *fileName);
-	int ReadPoolData(char *fileName);
-	int ReadProjData(char *fileName);
-	int ReadSampData(char *fileName);
-	int ReadSdirData(char *fileName);
+	char* ReadDataAlloc(char* fileName);
+	int ReadPoolData(char* fileName);
+	int ReadProjData(char* fileName);
+	int ReadSampData(char* fileName);
+	int ReadSdirData(char* fileName);
 	void ResetFade();
 	void SetAutoDemo(int demo);
 	void SetMuteSe(int mute);

@@ -10,18 +10,18 @@ DAudio::DAudio()
 	mProjData = NULL;
 	mSdirData = NULL;
 	mSampData = NULL;
-	mSong     = NULL;
-	
+	mSong = NULL;
+
 	mAutoDemo = 0;
-	
+
 	mIsSeqMuted = false;
-	mIsSeMuted  = false;
-	
+	mIsSeMuted = false;
+
 	mVolume = 127;
 }
 
 DAudio::~DAudio()
-{   
+{
 }
 
 void DAudio::Coin()
@@ -42,9 +42,9 @@ void DAudio::DoorOpen()
 void DAudio::Fall()
 {
 	SND_VOICEID vId;
-	
+
 	vId = sndFXStart(SFXjump_oneshot, SND_FX_DEFVOL, SND_FX_DEFPAN);
-	
+
 	sndFXDoppler(vId, 0x1000);
 	sndFXPitchBend(vId, 0x1000);
 }
@@ -55,14 +55,14 @@ void DAudio::FreeSampBuffer()
 }
 
 void DAudio::Initialize()
-{   
+{
 	AIInit(NULL);
 	ARInit(mAramBlocks, NUM_ARAM_BLOCKS);
 	ARQInit();
 
 	sndSetHooks(&m_sndHooks);
 
-	if (!sndInit(48, 40, 8, SND_FLAGS_DEFAULT, MAX_ARAM_SIZE)) 
+	if (!sndInit(48, 40, 8, SND_FLAGS_DEFAULT, MAX_ARAM_SIZE))
 		OSReport("Audio Manager initialized success!!\n");
 	else
 		OSReport("Audio Manager initialized failed!!\n");
@@ -70,26 +70,26 @@ void DAudio::Initialize()
 	sndVolume(127, 0, SND_ALL_VOLGROUPS);
 
 	mReverb.tempDisableFX = false;
-	mReverb.time          = 5.0;
-	mReverb.preDelay      = 0.1;
-	mReverb.damping       = 0.6;
-	mReverb.coloration    = 0.9;
-	mReverb.crosstalk     = 0.0;
-	mReverb.mix           = 0.5;
-	
+	mReverb.time = 5.0;
+	mReverb.preDelay = 0.1;
+	mReverb.damping = 0.6;
+	mReverb.coloration = 0.9;
+	mReverb.crosstalk = 0.0;
+	mReverb.mix = 0.5;
+
 	mChorus.baseDelay = 15;
 	mChorus.variation = 0;
-	mChorus.period    = 500;
-	
+	mChorus.period = 500;
+
 	sndAuxCallbackPrepareReverbHI(&mReverb);
 	sndAuxCallbackPrepareChorus(&mChorus);
-	
+
 	sndSetAuxProcessingCallbacks(0, sndAuxCallbackReverbHI, &mReverb, 255, 0, sndAuxCallbackChorus, &mChorus, 255, 0);
 }
 
 void DAudio::Jump()
 {
-	sndFXStart(SFXjump_oneshot, SND_FX_DEFVOL, SND_FX_DEFPAN);	
+	sndFXStart(SFXjump_oneshot, SND_FX_DEFVOL, SND_FX_DEFPAN);
 }
 
 /* I cannot get this one matching. */
@@ -103,30 +103,30 @@ void DAudio::MuteAll(int dipVolume)
 	sndMasterVolume(mVolume, 1000, !mIsSeqMuted, !mIsSeMuted);
 }
 
-int DAudio::PlaySong(CSong *song)
+int DAudio::PlaySong(CSong* song)
 {
 	if (song == mSong)
 		return true;
-	
+
 	if (song->PlaySong(mSgId) != true)
 		return false;
-	
+
 	mSong = song;
-	
+
 	return true;
 }
 
 int DAudio::PlaySongFadeOut()
 {
 	int seqId = mSong->mSeqId;
-	
+
 	if (mSong && seqId != SND_SEQ_ERROR_ID)
 	{
 		sndSeqVolume(0, 3000, seqId, SND_SEQVOL_STOP);
 		OSReport("Stop song %d\n", seqId);
 		mSong = NULL;
 	}
-	
+
 	return true;
 }
 
@@ -140,12 +140,12 @@ void DAudio::Quit()
 	sndQuit();
 }
 
-char *DAudio::ReadDataAlloc(char *fileName)
+char* DAudio::ReadDataAlloc(char* fileName)
 {
-	char *data;
+	char* data;
 	DVDFileInfo fileInfo;
 	u32 length;
-	
+
 	if (!DVDOpen(fileName, &fileInfo))
 	{
 		OSReport("ERROR: Unable to opne '%s'\n", fileName);
@@ -154,7 +154,7 @@ char *DAudio::ReadDataAlloc(char *fileName)
 	}
 
 	length = ALIGN(fileInfo.length, 0x20);
-	data   = new char[length];
+	data = new char[length];
 
 	if (data == NULL)
 	{
@@ -177,67 +177,67 @@ char *DAudio::ReadDataAlloc(char *fileName)
 	return data;
 }
 
-int DAudio::ReadPoolData(char *fileName)
+int DAudio::ReadPoolData(char* fileName)
 {
 	if (mPoolData != NULL)
 	{
 		delete mPoolData;
 		mPoolData = NULL;
 	}
-	
+
 	mPoolData = ReadDataAlloc(fileName);
-	
+
 	if (mPoolData == NULL)
 		return false;
-	
+
 	return true;
 }
 
-int DAudio::ReadProjData(char *fileName)
+int DAudio::ReadProjData(char* fileName)
 {
 	if (mProjData != NULL)
 	{
 		delete mProjData;
 		mProjData = NULL;
 	}
-	
+
 	mProjData = ReadDataAlloc(fileName);
-	
+
 	if (mProjData == NULL)
 		return false;
-	
+
 	return true;
 }
 
-int DAudio::ReadSampData(char *fileName)
+int DAudio::ReadSampData(char* fileName)
 {
 	if (mSampData != NULL)
 	{
 		delete mSampData;
 		mSampData = NULL;
 	}
-	
+
 	mSampData = ReadDataAlloc(fileName);
-	
+
 	if (mSampData == NULL)
 		return false;
-	
+
 	return true;
 }
 
-int DAudio::ReadSdirData(char *fileName)
+int DAudio::ReadSdirData(char* fileName)
 {
 	if (mSdirData != NULL)
 	{
 		delete mSdirData;
 		mSdirData = NULL;
 	}
-	
+
 	mSdirData = ReadDataAlloc(fileName);
-	
+
 	if (mSdirData == NULL)
 		return false;
-	
+
 	return true;
 }
 
@@ -250,11 +250,11 @@ void DAudio::ResetFade()
 void DAudio::SetAutoDemo(int demo)
 {
 	mAutoDemo = demo;
-	
+
 	if (mAutoDemo == true)
 	{
 		mIsSeMuted = true;
-		
+
 		if (mIsSeMuted == true)
 			sndMasterVolume(0, 1000, false, true);
 		else
@@ -263,7 +263,7 @@ void DAudio::SetAutoDemo(int demo)
 	else
 	{
 		mIsSeMuted = false;
-		
+
 		if (mIsSeMuted == true)
 			sndMasterVolume(0, 1000, false, true);
 		else
@@ -274,7 +274,7 @@ void DAudio::SetAutoDemo(int demo)
 void DAudio::SetMuteSe(int mute)
 {
 	mIsSeMuted = mute;
-	
+
 	if (mIsSeMuted == true)
 		sndMasterVolume(0, 1000, false, true);
 	else
@@ -284,7 +284,7 @@ void DAudio::SetMuteSe(int mute)
 void DAudio::SetMuteSequence(int mute)
 {
 	mIsSeqMuted = mute;
-	
+
 	if (mIsSeqMuted == true)
 		sndMasterVolume(0, 1000, false, true);
 	else
@@ -294,13 +294,13 @@ void DAudio::SetMuteSequence(int mute)
 int DAudio::SongStop()
 {
 	int seqId = mSong->mSeqId;
-	
+
 	if (mSong && seqId != SND_SEQ_ERROR_ID)
 	{
 		sndSeqVolume(0, 3000, seqId, SND_SEQVOL_STOP);
 		OSReport("Stop song %d\n", seqId);
 		mSong = NULL;
 	}
-	
+
 	return true;
 }
